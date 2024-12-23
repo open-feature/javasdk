@@ -5,6 +5,7 @@ package dev.openfeature.sdk;
  * for the duration of a single transaction.
  * Examples of potential transaction specific context include: a user id, user agent, IP.
  * Transaction context is merged with evaluation context prior to flag evaluation.
+ * 
  * <p>
  * The precedence of merging context can be seen in
  * <a href=https://openfeature.dev/specification/sections/evaluation-context#requirement-323>the specification</a>.

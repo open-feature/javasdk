@@ -67,7 +67,7 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>4.11.0</version>
+      <version>5.14.2</version>
       <scope>test</scope>
     </dependency>
 
@@ -419,7 +419,7 @@
           <dependency>
             <groupId>com.puppycrawl.tools</groupId>
             <artifactId>checkstyle</artifactId>
-            <version>8.45.1</version>
+            <version>10.21.0</version>
           </dependency>
         </dependencies>
         <executions>

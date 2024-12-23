@@ -27,13 +27,12 @@ public interface FeatureProvider {
 
     /**
      * This method is called before a provider is used to evaluate flags. Providers
-     * can overwrite this method,
-     * if they have special initialization needed prior being called for flag
-     * evaluation.
+     * can overwrite this method, if they have special initialization needed prior 
+     * being called for flag evaluation.
+     * 
      * <p>
      * It is ok if the method is expensive as it is executed in the background. All
-     * runtime exceptions will be
-     * caught and logged.
+     * runtime exceptions will be caught and logged.
      * </p>
      */
     default void initialize(EvaluationContext evaluationContext) throws Exception {
@@ -42,13 +41,12 @@ public interface FeatureProvider {
 
     /**
      * This method is called when a new provider is about to be used to evaluate
-     * flags, or the SDK is shut down.
-     * Providers can overwrite this method, if they have special shutdown actions
-     * needed.
+     * flags, or the SDK is shut down. Providers can overwrite this method, if they 
+     * have special shutdown actions needed.
+     * 
      * <p>
      * It is ok if the method is expensive as it is executed in the background. All
-     * runtime exceptions will be
-     * caught and logged.
+     * runtime exceptions will be caught and logged.
      * </p>
      */
     default void shutdown() {
@@ -60,12 +58,15 @@ public interface FeatureProvider {
      * If the provider needs to be initialized, it should return {@link ProviderState#NOT_READY}.
      * If the provider is in an error state, it should return {@link ProviderState#ERROR}.
      * If the provider is functioning normally, it should return {@link ProviderState#READY}.
-     *
-     * <p><i>Providers which do not implement this method are assumed to be ready immediately.</i></p>
+     * 
+     * <p>
+     * <i>Providers which do not implement this method are assumed to be ready immediately.</i>
+     * </p>
      *
      * @return ProviderState
      * @deprecated The state is handled by the SDK internally. Query the state from the {@link Client} instead.
      */
+
     @Deprecated
     default ProviderState getState() {
         return ProviderState.READY;
