@@ -18,8 +18,8 @@
   </a>
   <!-- x-release-please-start-version -->
 
-  <a href="https://github.com/open-feature/java-sdk/releases/tag/v1.14.0">
-    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v1.14.0&color=blue&style=for-the-badge" />
+  <a href="https://github.com/open-feature/java-sdk/releases/tag/v1.14.1">
+    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v1.14.1&color=blue&style=for-the-badge" />
   </a>  
 
   <!-- x-release-please-end -->
@@ -59,7 +59,7 @@ Note that this library is intended to be used in server-side contexts and has no
 <dependency>
     <groupId>dev.openfeature</groupId>
     <artifactId>sdk</artifactId>
-    <version>1.14.0</version>
+    <version>1.14.1</version>
 </dependency>
 ```
 <!-- x-release-please-end-version -->
@@ -84,7 +84,7 @@ If you would like snapshot builds, this is the relevant repository information:
 <!-- x-release-please-start-version -->
 ```groovy
 dependencies {
-    implementation 'dev.openfeature:sdk:1.14.0'
+    implementation 'dev.openfeature:sdk:1.14.1'
 }
 ```
 <!-- x-release-please-end-version -->
