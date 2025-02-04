@@ -19,10 +19,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 class EventSupport {
 
+    public static final int SHUTDOWN_TIMEOUT_SECONDS = 3;
+
     // we use a v4 uuid as a "placeholder" for anonymous clients, since
     // ConcurrentHashMap doesn't support nulls
     private static final String defaultClientUuid = UUID.randomUUID().toString();
-    private static final int SHUTDOWN_TIMEOUT_SECONDS = 3;
     private final Map<String, HandlerStore> handlerStores = new ConcurrentHashMap<>();
     private final HandlerStore globalHandlerStore = new HandlerStore();
     private final ExecutorService taskExecutor = Executors.newCachedThreadPool(runnable -> {

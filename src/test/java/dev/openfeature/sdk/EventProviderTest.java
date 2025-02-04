@@ -2,13 +2,19 @@ package dev.openfeature.sdk;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import dev.openfeature.sdk.internal.TriConsumer;
+import dev.openfeature.sdk.testutils.TestStackedEmitCallsProvider;
+import io.cucumber.java.AfterAll;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 class EventProviderTest {
 
@@ -19,6 +25,11 @@ class EventProviderTest {
     void setup() {
         eventProvider = new TestEventProvider();
         eventProvider.initialize(null);
+    }
+
+    @AfterAll
+    public static void resetDefaultProvider() {
+        OpenFeatureAPI.getInstance().setProviderAndWait(new NoOpProvider());
     }
 
     @Test
@@ -73,6 +84,15 @@ class EventProviderTest {
         TriConsumer<EventProvider, ProviderEvent, ProviderEventDetails> onEmit2 = onEmit1;
         eventProvider.attach(onEmit1);
         eventProvider.attach(onEmit2); // should not throw, same instance. noop
+    }
+
+    @Test
+    @SneakyThrows
+    @Timeout(value = 2, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
+    @DisplayName("should not deadlock on emit called during emit")
+    void doesNotDeadlockOnEmitStackedCalls() {
+        TestStackedEmitCallsProvider provider = new TestStackedEmitCallsProvider();
+        OpenFeatureAPI.getInstance().setProviderAndWait(provider);
     }
 
     static class TestEventProvider extends EventProvider {

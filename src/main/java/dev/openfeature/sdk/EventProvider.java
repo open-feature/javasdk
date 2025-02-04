@@ -1,6 +1,10 @@
 package dev.openfeature.sdk;
 
 import dev.openfeature.sdk.internal.TriConsumer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Abstract EventProvider. Providers must extend this class to support events.
@@ -14,8 +18,14 @@ import dev.openfeature.sdk.internal.TriConsumer;
  *
  * @see FeatureProvider
  */
+@Slf4j
 public abstract class EventProvider implements FeatureProvider {
     private EventProviderListener eventProviderListener;
+    private final ExecutorService emitterExecutor = Executors.newCachedThreadPool(runnable -> {
+        final Thread thread = new Thread(runnable);
+        thread.setDaemon(true);
+        return thread;
+    });
 
     void setEventProviderListener(EventProviderListener eventProviderListener) {
         this.eventProviderListener = eventProviderListener;
@@ -47,6 +57,24 @@ public abstract class EventProvider implements FeatureProvider {
     }
 
     /**
+     * Stop the event emitter executor and block until either termination has completed
+     * or timeout period has elapsed.
+     */
+    @Override
+    public void shutdown() {
+        emitterExecutor.shutdown();
+        try {
+            if (!emitterExecutor.awaitTermination(EventSupport.SHUTDOWN_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                log.warn("Emitter executor did not terminate before the timeout period had elapsed");
+                emitterExecutor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            emitterExecutor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
      * Emit the specified {@link ProviderEvent}.
      *
      * @param event   The event type
@@ -56,8 +84,10 @@ public abstract class EventProvider implements FeatureProvider {
         if (eventProviderListener != null) {
             eventProviderListener.onEmit(event, details);
         }
-        if (this.onEmit != null) {
-            this.onEmit.accept(this, event, details);
+
+        final TriConsumer<EventProvider, ProviderEvent, ProviderEventDetails> localOnEmit = this.onEmit;
+        if (localOnEmit != null) {
+            emitterExecutor.submit(() -> localOnEmit.accept(this, event, details));
         }
     }
 
