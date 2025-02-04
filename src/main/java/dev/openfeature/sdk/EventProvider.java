@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class EventProvider implements FeatureProvider {
     private EventProviderListener eventProviderListener;
     private static final int SHUTDOWN_TIMEOUT_SECONDS = 3;
-    private final ExecutorService emitterExecutor = Executors.newCachedThreadPool(runnable -> {
+    private static final ExecutorService emitterExecutor = Executors.newCachedThreadPool(runnable -> {
         final Thread thread = new Thread(runnable);
         thread.setDaemon(true);
         return thread;
@@ -85,8 +85,10 @@ public abstract class EventProvider implements FeatureProvider {
         if (eventProviderListener != null) {
             eventProviderListener.onEmit(event, details);
         }
-        if (this.onEmit != null) {
-            emitterExecutor.submit(() -> this.onEmit.accept(this, event, details));
+
+        final TriConsumer<EventProvider, ProviderEvent, ProviderEventDetails> localOnEmit = this.onEmit;
+        if (localOnEmit != null) {
+            emitterExecutor.submit(() -> localOnEmit.accept(this, event, details));
         }
     }
 
@@ -97,7 +99,6 @@ public abstract class EventProvider implements FeatureProvider {
      * @param details The details of the event
      */
     public void emitProviderReady(ProviderEventDetails details) {
-        System.out.println("Details: " + details);
         emit(ProviderEvent.PROVIDER_READY, details);
     }
 

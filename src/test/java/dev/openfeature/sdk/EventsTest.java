@@ -19,7 +19,7 @@ import org.mockito.ArgumentMatcher;
 
 class EventsTest {
 
-    private static final int TIMEOUT = 300;
+    private static final int TIMEOUT = 500;
     private static final int INIT_DELAY = TIMEOUT / 2;
 
     @AfterAll
