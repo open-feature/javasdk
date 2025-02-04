@@ -21,8 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class EventProvider implements FeatureProvider {
     private EventProviderListener eventProviderListener;
-    private static final int SHUTDOWN_TIMEOUT_SECONDS = 3;
-    private static final ExecutorService emitterExecutor = Executors.newCachedThreadPool(runnable -> {
+    private final ExecutorService emitterExecutor = Executors.newCachedThreadPool(runnable -> {
         final Thread thread = new Thread(runnable);
         thread.setDaemon(true);
         return thread;
@@ -65,7 +64,7 @@ public abstract class EventProvider implements FeatureProvider {
     public void shutdown() {
         emitterExecutor.shutdown();
         try {
-            if (!emitterExecutor.awaitTermination(SHUTDOWN_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+            if (!emitterExecutor.awaitTermination(EventSupport.SHUTDOWN_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
                 log.warn("Emitter executor did not terminate before the timeout period had elapsed");
                 emitterExecutor.shutdownNow();
             }
